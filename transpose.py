@@ -52,7 +52,7 @@ def transpose_midi(midi_path: str, transposition: int) -> bool:
         midi = MidiFile(midi_path)
         for track in midi.tracks:
             for message in track:
-                if message.type in ["note_on", "note_off"]:
+                if message.type in {"note_on", "note_off"}:
                     message.note = transpose_note(message.note, transposition)
 
         basepath = remove_ext(midi_path)
