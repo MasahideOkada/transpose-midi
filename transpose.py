@@ -69,6 +69,9 @@ def transpose_midi(midi_path: str, transposition: int | list[int]) -> bool:
 
             basepath = remove_ext(midi_path)
             midi.save(f"{basepath}_tp{tp}.mid")
+        except KeyboardInterrupt:
+            print(f"keyboard interruption when transposing {midi_path} by {tp}")
+            raise
         except:
             is_ok = False
 
