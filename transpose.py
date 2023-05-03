@@ -2,7 +2,13 @@ import os, argparse
 from pathlib import Path
 
 from mido import MidiFile
-from tqdm import tqdm
+
+TQDM_EXISTS = False
+try:
+    from tqdm import tqdm
+    TQDM_EXISTS = True
+except ModuleNotFoundError:
+    pass
 
 LOWEST_NOTE = 0
 HIGHEST_NOTE = 127
@@ -42,24 +48,29 @@ def transpose_note(input_note: int, transposition: int) -> int:
     
     return transposed
 
-def transpose_midi(midi_path: str, transposition: int) -> bool:
+def transpose_midi(midi_path: str, transposition: int | list[int]) -> bool:
     """
-    transposes all notes in a midi file by the value `transposition`\n
-    returns `True` if the process is done successfully, `False` otherwise
+    transposes all notes in a midi file by the value(s) `transposition`\n
+    returns `True` if the process is done successfully, `False` otherwise\n
+    `transposition` can be either a single value or a list of values
     """
     
     is_ok = True
-    try:
-        midi = MidiFile(midi_path)
-        for track in midi.tracks:
-            for message in track:
-                if message.type in {"note_on", "note_off"}:
-                    message.note = transpose_note(message.note, transposition)
 
-        basepath = remove_ext(midi_path)
-        midi.save(f"{basepath}_tp{transposition}.mid")
-    except:
-        is_ok = False
+    if type(transposition) is int:
+        transposition = [transposition]
+    for tp in transposition:
+        try:
+            midi = MidiFile(midi_path)
+            for track in midi.tracks:
+                for message in track:
+                    if message.type in {"note_on", "note_off"}:
+                        message.note = transpose_note(message.note, tp)
+
+            basepath = remove_ext(midi_path)
+            midi.save(f"{basepath}_tp{tp}.mid")
+        except:
+            is_ok = False
 
     return is_ok
 
@@ -79,11 +90,21 @@ if __name__ == "__main__":
     dir_path = Path(dir)
     midi_files = list(dir_path.rglob("*.mid"))
     error_files = []
-    for midi_path in tqdm(midi_files):
-        for transposition in transposition_values:
-            ok = transpose_midi(str(midi_path), transposition)
+    if TQDM_EXISTS:
+        for midi_path in tqdm(midi_files):
+            ok = transpose_midi(str(midi_path), transposition_values)
             if not ok:
                 error_files.append(str(midi_path))
+    else:
+        num_files = len(midi_files)
+        for i, midi_path in enumerate(midi_files, start=1):
+            progress = 100 * i // num_files
+            print(f"{i}/{num_files} {progress}%", end="" if i != num_files else "\n")
+            ok = transpose_midi(str(midi_path), transposition_values)
+            if not ok:
+                error_files.append(str(midi_path))
+            if i != num_files:
+                print("\r", end="")
 
     if len(error_files) > 0:
         print("error occured when transposing midi files below")

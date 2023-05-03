@@ -7,4 +7,4 @@ $ python ./transpose.py MIDI_DIRECTORY
 ```
 ## dependencies
 - mido 1.2.10
-- tqdm 4.65.0
+- tqdm 4.65.0 (optional)
