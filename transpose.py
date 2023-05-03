@@ -27,7 +27,8 @@ def transpose_note(input_note: int, transposition: int) -> int:
     transposes a midi note by the value `transposition`\n
     for simplicity, transposing beyond octave is not allowed
     """
-
+    assert type(input_note) is int, "type of `input_note` must be `int`"
+    assert type(transposition) is int, "type of `transposition` must be `int`"
     assert input_note >= LOWEST_NOTE and input_note <= HIGHEST_NOTE,\
         f"note value must be between {LOWEST_NOTE} and {HIGHEST_NOTE}"
     assert transposition >= -12 and transposition <= 12,\
