@@ -42,7 +42,7 @@ def transpose_note(input_note: int, transposition: int) -> int:
 
     transposed = input_note + transposition
     if transposed < LOWEST_NOTE:
-        transposed += 12 # ocatave up
+        transposed += 12 # octave up
     if transposed > HIGHEST_NOTE:
         transposed -= 12 # octave down
     
