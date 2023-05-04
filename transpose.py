@@ -91,21 +91,21 @@ if __name__ == "__main__":
 
     dir = args.directory
     dir_path = Path(dir)
-    midi_files = list(dir_path.rglob("*.mid"))
+    midi_files = [str(midi_path) for midi_path in dir_path.rglob("*.mid")]
     error_files = []
     if TQDM_EXISTS:
         for midi_path in tqdm(midi_files):
-            ok = transpose_midi(str(midi_path), transposition_values)
+            ok = transpose_midi(midi_path, transposition_values)
             if not ok:
-                error_files.append(str(midi_path))
+                error_files.append(midi_path)
     else:
         num_files = len(midi_files)
         for i, midi_path in enumerate(midi_files, start=1):
             progress = 100 * i // num_files
             print(f"{i}/{num_files} {progress}%", end="" if i != num_files else "\n")
-            ok = transpose_midi(str(midi_path), transposition_values)
+            ok = transpose_midi(midi_path, transposition_values)
             if not ok:
-                error_files.append(str(midi_path))
+                error_files.append(midi_path)
             if i != num_files:
                 print("\r", end="")
 
