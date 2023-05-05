@@ -89,8 +89,7 @@ if __name__ == "__main__":
     
     transposition_values = [i for i in range(-5, 7) if i != 0]
 
-    dir = args.directory
-    dir_path = Path(dir)
+    dir_path = Path(args.directory)
     midi_files = [str(midi_path) for midi_path in dir_path.rglob("*.mid")]
     error_files = []
     if TQDM_EXISTS:
